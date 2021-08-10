@@ -9,8 +9,15 @@ export const getBlogs = createAsyncThunk('blogReducer/getBlogs', async () => {
   return res.data;
 })
 
+export const getUserBlogs = createAsyncThunk('blogReducer/getUserBlogs', async (username) => {
+  const res = await axios.get(`${BASE_URL}:3000/api/blogs/get_by_username/${username}`);
+  return res.data;
+})
+
 const initialState = {
   blogs: [],
+  userBlogs: [],
+
 }
 
 const blogsSlice = createSlice({
@@ -22,7 +29,10 @@ const blogsSlice = createSlice({
   extraReducers: {
     [getBlogs.fulfilled]: (state, action) => {
       state.blogs = action.payload;
-    }
+    },
+    [getUserBlogs.fulfilled]: (state, action) => {
+      state.userBlogs = action.payload;
+    },
   }
 });
 
@@ -30,4 +40,5 @@ export const {
 
 } = blogsSlice.actions
 export const selectedBlogs = state => state.blogReducer.blogs;
+export const selectedUserBlogs = state => state.blogReducer.userBlogs;
 export default blogsSlice.reducer

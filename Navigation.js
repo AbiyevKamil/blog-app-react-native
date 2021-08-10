@@ -1,21 +1,22 @@
 import React from 'react'
+import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { selectedIsLoggedIn } from './features/users/usersSlice';
+import { getUser, selectedIsLoggedIn, selectedUserData, setToken } from './features/users/usersSlice';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useSelector } from 'react-redux';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import CustomHeader from './components/CustomHeader';
-import Main from './pages/Main';
+import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import IconAnt from 'react-native-vector-icons/AntDesign';
-import Profile from './pages/Profile';
-import AddNewBlog from './pages/AddNewBlog';
-import Search from './pages/Search';
-import BlogDetail from './pages/BlogDetail';
+import Main from './screens/Main';
+import Home from './screens/Home';
+import Profile from './screens/Profile';
+import Login from './screens/Login';
+import Register from './screens/Register';
+import CustomHeader from './components/CustomHeader';
+import NewBlogNavigator from './screens/NewBlogNavigator';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ProfileNavigator from './screens/ProfileNavigator';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -29,11 +30,25 @@ const navigationOptions = {
 }
 
 const Navigation = () => {
+  const userData = useSelector(selectedUserData);
+  const dispatch = useDispatch()
+  let token;
+  const getCookie = async () => {
+    token = await AsyncStorage.getItem('access_token');
+    if (token !== "") {
+      dispatch(getUser(token))
+      dispatch(setToken(token))
+    }
+    return token;
+  }
+  useEffect(() => {
+    getCookie();
+  }, [token]);
   const isLoggedIn = useSelector(selectedIsLoggedIn);
   return (
     <NavigationContainer>
       <StatusBar style='light' />
-      {isLoggedIn ? (
+      {token !== "" > 0 ? (
         <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
@@ -81,17 +96,17 @@ const Navigation = () => {
             name="Main"
             component={Main}
           />
-          <Tab.Screen
+          {/* <Tab.Screen
             name="Search"
-            component={Search}
-          />
+            component={SearchNavigator}
+          /> */}
           <Tab.Screen
             name="New Blog"
-            component={AddNewBlog}
+            component={NewBlogNavigator}
           />
           <Tab.Screen
             name="Profile"
-            component={Profile}
+            component={ProfileNavigator}
           />
         </Tab.Navigator>
       ) : (

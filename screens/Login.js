@@ -2,29 +2,31 @@ import React, { useState } from 'react'
 import { StyleSheet, View, Text, TextInput, Button, Image, KeyboardAvoidingView, TouchableOpacity, ScrollView } from 'react-native'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectedUserData, userLogin, selectedIsLoggedIn, selectedLoginError, selectedLoginSucces } from '../features/users/usersSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const signUpSchema = Yup.object({
+const logInSchema = Yup.object({
   email: Yup.string().email("Email is not valid!").required("Email is required!"),
-  username: Yup.string().min(6, "Username must be at lest 6 characters!").required("Username is required!"),
   password: Yup.string().min(6, "Password must be at lest 6 characters!").required("Password is required!"),
-  password2: Yup.string().oneOf([Yup.ref('password')], "Passwords must match!").min(6, "Password must be at lest 6 characters!").required("Password confirmation is required!"),
 })
 
-const Login = ({ navigation }) => {
+const Register = ({ navigation }) => {
   const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [password2, setPassword2] = useState('');
+  const dispatch = useDispatch()
+  const userData = useSelector(selectedUserData)
+  const isLoggedIn = useSelector(selectedIsLoggedIn)
+  const loginError = useSelector(selectedLoginError)
+  const loginSucces = useSelector(selectedLoginSucces)
 
   const initialValues = {
     email: email,
-    username: username,
     password: password,
-    password2: password2
   }
 
   const handeSubmit = (values) => {
-    console.log(values);
+    dispatch(userLogin(values))
   }
 
   return (
@@ -33,9 +35,7 @@ const Login = ({ navigation }) => {
       <Formik
         initialValues={initialValues}
         onSubmit={values => handeSubmit(values)}
-        validationSchema={signUpSchema}
-      // validateOnChange={false}
-      // validateOnBlur={false}
+        validationSchema={logInSchema}
       >
         {props => (
           <View style={styles.formContainer}>
@@ -48,14 +48,6 @@ const Login = ({ navigation }) => {
             />
             <Text style={styles.errorText}>{props.touched.email && props.errors.email}</Text>
             <TextInput
-              style={props.errors.username ? styles.inputError : styles.input}
-              placeholder='Username'
-              onChangeText={props.handleChange('username')}
-              onBlur={props.handleBlur('username')}
-              value={props.values.username}
-            />
-            <Text style={styles.errorText}>{props.touched.username && props.errors.username}</Text>
-            <TextInput
               style={props.errors.password ? styles.inputError : styles.input}
               placeholder='Password'
               onChangeText={props.handleChange('password')}
@@ -64,20 +56,11 @@ const Login = ({ navigation }) => {
               secureTextEntry={true}
             />
             <Text style={styles.errorText}>{props.touched.password && props.errors.password}</Text>
-            <TextInput
-              style={props.errors.password2 ? styles.inputError : styles.input}
-              placeholder='Confirm Password'
-              onChangeText={props.handleChange('password2')}
-              onBlur={props.handleBlur('password2')}
-              value={props.values.password2}
-              secureTextEntry={true}
-            />
-            <Text style={styles.errorText}>{props.touched.password2 && props.errors.password2}</Text>
-            <TouchableOpacity style={styles.button} onPress={() => {
-              navigation.navigate("Main")
-              props.handleSubmit
-            }}>
-              <Text style={styles.buttonText}>Log in</Text>
+            <View style={styles.dbError}>
+              {loginError.length > 0 && loginError.map(err => <Text style={styles.errorText} key={err.msg}>{err.msg}</Text>)}
+            </View>
+            <TouchableOpacity style={styles.button} onPress={props.handleSubmit}>
+              <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
             <View style={styles.signUpOption}>
               <Text style={styles.signUpOptionText}>Don't you have an account?</Text>
@@ -102,7 +85,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 1,
-    marginTop: 25,
+    marginTop: 40,
     padding: 15,
   },
   input: {
@@ -163,4 +146,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default Login
+export default Register
