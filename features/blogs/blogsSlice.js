@@ -29,6 +29,10 @@ const blogsSlice = createSlice({
   extraReducers: {
     [getBlogs.fulfilled]: (state, action) => {
       state.blogs = action.payload;
+      console.log('Get Blogs Fullfilled')
+    },
+    [getBlogs.rejected]: (state, action) => {
+      console.log('Get Blogs Rejected')
     },
     [getUserBlogs.fulfilled]: (state, action) => {
       state.userBlogs = action.payload;

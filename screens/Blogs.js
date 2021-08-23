@@ -14,12 +14,15 @@ const Blogs = ({ navigation }) => {
   const setCookie = async (id) => {
     await AsyncStorage.setItem('access_token', id);
   }
+  
   useEffect(() => {
+    console.log(dispatch(getBlogs()))
     dispatch(getBlogs());
     if (userData._id) {
       setCookie(userData._id);
     }
   }, []);
+
   return (
     <View style={styles.container}>
       <ScrollView style={{ padding: 20, marginBottom: 5 }}>

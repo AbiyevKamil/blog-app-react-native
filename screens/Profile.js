@@ -10,48 +10,51 @@ const Profile = () => {
   const userBlogs = useSelector(selectedUserBlogs);
   const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(getUserBlogs(userData.username));
-    console.log("userData ", userData);
+    if (userData.length > 0) {
+      dispatch(getUserBlogs(userData.username));
+    }
   }, [])
   return (
     <View style={styles.container}>
-      <View style={styles.userContainer}>
-        <Avatar
-          rounded
-          size={50}
-          title={userData.username.toString().substring(0, 1)}
-          source={{
-            uri:
-              `https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg`,
-          }}
-        />
-        <Text style={styles.username}>
-          {userData.username.toString()}
-        </Text>
-      </View>
-      <ScrollView style={styles.descContainer}>
-        <Text style={styles.joined}>
-          Joined:
-        </Text>
-        <Text style={styles.joinedSelf}>
-          {userData.createdAt.toString().substring(0, 10)} / {userData.createdAt.toString().substring(11, 16)}
-        </Text>
-        <Text style={styles.email}>
-          Email:
-        </Text>
-        <Text style={styles.emailSelf}>
-          {userData.email}
-        </Text>
-        <Text style={styles.header}>Your blogs: </Text>
-        <View style={styles.blogsContainer}>
-          {userBlogs.length ? userBlogs.map(blog => (<Blog
-            key={blog._id}
-            blog={blog}
-          />)) : (
-            <Text style={styles.noPost}>No Post!</Text>
-          )}
+      {userData.length ? (<>
+        <View style={styles.userContainer}>
+          <Avatar
+            rounded
+            size={50}
+            title={userData.username.toString().substring(0, 1)}
+            source={{
+              uri:
+                `https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg`,
+            }}
+          />
+          <Text style={styles.username}>
+            {userData.username.toString()}
+          </Text>
         </View>
-      </ScrollView>
+        <ScrollView style={styles.descContainer}>
+          <Text style={styles.joined}>
+            Joined:
+          </Text>
+          <Text style={styles.joinedSelf}>
+            {userData.createdAt.toString().substring(0, 10)} / {userData.createdAt.toString().substring(11, 16)}
+          </Text>
+          <Text style={styles.email}>
+            Email:
+          </Text>
+          <Text style={styles.emailSelf}>
+            {userData.email}
+          </Text>
+          <Text style={styles.header}>Your blogs: </Text>
+          <View style={styles.blogsContainer}>
+            {userBlogs.length ? userBlogs.map(blog => (<Blog
+              key={blog._id}
+              blog={blog}
+            />)) : (
+              <Text style={styles.noPost}>No Post!</Text>
+            )}
+          </View>
+        </ScrollView>
+      </>) : <Text>Loading</Text>}
     </View>
   )
 }

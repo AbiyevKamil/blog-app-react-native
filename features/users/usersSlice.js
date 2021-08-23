@@ -1,7 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import axios from 'axios';
-// import CookieManager from '@react-native-community/cookies'
-// import AsyncStorage from '@react-native-community/async-storage';
 
 const BASE_URL = Platform.OS === 'android' ? 'http://10.0.2.2' : 'http://localhost';
 
@@ -78,8 +76,6 @@ const usersSlice = createSlice({
         state.userData = action.payload.user;
         state.loginSucces = true;
         state.isLoggedIn = true;
-        // Set Cookies
-        setCookie(action.payload.user._id)
       } else {
         state.loginSucces = false;
         state.loginError = action.payload.error;
